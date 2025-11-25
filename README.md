@@ -1,89 +1,126 @@
-# M2 DI - Outils de la Data
+# M2 Développement Informatique - Outils de la Data
 
-Ce dépôt contient les ressources pédagogiques pour le cours **Outils de la Data** du Master 2 en Data Intelligence.
+## Bienvenue dans cette formation !
 
-## 📚 Contenu
+Bonjour et bienvenue dans ce cours sur les **Outils de la Data** !
 
-- **Slides de cours** : Présentation complète sur les outils de la data
-- **Exercices pratiques** : Exercices open source pour mettre en pratique les concepts
-- **Ressources** : Documentation et liens utiles
+Je suis **Abid Hamza**, votre formateur, et je suis ravi de vous accompagner dans cette formation. Ce dépôt contient toutes les ressources nécessaires pour maîtriser les outils essentiels de la data science et du traitement de données.
 
-## 🎯 Objectifs du cours
+**Cette formation est conçue pour être entièrement autonome.** Vous pouvez travailler à votre rythme, suivre les instructions détaillées dans chaque exercice, et progresser étape par étape.
 
-Ce cours vise à :
-- Comprendre l'écosystème des outils de la data
+## Contenu du cours
+
+Ce dépôt contient :
+
+- **Slides de cours** : Présentation complète sur les outils de la data (format PowerPoint, HTML et Markdown)
+- **Exercices pratiques** : 7 exercices progressifs utilisant de vrais outils open source
+- **Ressources** : Documentation et liens utiles pour approfondir vos connaissances
+
+## Objectifs de ce cours
+
+À la fin de cette formation, vous serez capable de :
+
+- Comprendre l'écosystème complet des outils de données
 - Maîtriser les outils essentiels pour le traitement et l'analyse de données
-- Apprendre à choisir les bons outils selon le contexte
-- Mettre en pratique les concepts à travers des exercices
+- Installer et configurer des outils open source professionnels
+- Créer des dashboards, visualisations et pipelines de données
+- Choisir les bons outils selon le contexte de votre projet
 
-## 📁 Structure du dépôt
+## Structure du dépôt
 
 ```
 .
 ├── slides/                          # Présentations du cours
-│   ├── index.html                   # Version HTML pour projection (Reveal.js)
-│   ├── cours-outils-data.md         # Version Markdown originale
-│   ├── cours-outils-data-format-word.md  # Version optimisée pour Word/PDF
-│   └── INSTRUCTIONS_CONVERSION.md   # Guide de conversion Word/PDF
+│   ├── cours-outils-data.pptx      # Version PowerPoint (à utiliser)
+│   ├── index.html                   # Version HTML interactive
+│   └── cours-outils-data-format-word.md  # Version Markdown
 ├── exercices/                       # Exercices pratiques (autonomes)
-│   ├── exercice-01/                 # Pandas (1h) - données générées
-│   ├── exercice-02/                 # SQL (1h) - base de données générée
-│   ├── exercice-03/                 # Pipeline ETL (2h)
-│   ├── exercice-04/                 # Apache Spark (2h) - données générées
-│   ├── exercice-05/                 # Grafana (8h) - métriques générées
-│   ├── exercice-06/                 # Apache Airflow (10h)
-│   ├── exercice-07/                 # dbt (11h)
-│   ├── atelier-01/                  # Dashboard analytique (14-16h)
-│   ├── atelier-02/                  # Machine Learning Pipeline (15-17h)
-│   └── atelier-03/                  # Stack moderne complète (15h)
+│   ├── exercice-01/                 # Apache Superset - Business Intelligence
+│   ├── exercice-02/                 # Metabase - Self-Service BI
+│   ├── exercice-03/                 # ELK Stack - Analyse de logs
+│   ├── exercice-04/                 # Apache Spark - Big Data
+│   ├── exercice-05/                 # Grafana + Prometheus - Monitoring
+│   ├── exercice-06/                 # Apache Airflow - Orchestration
+│   ├── exercice-07/                 # dbt - Transformation SQL
+│   └── README.md                    # Guide général des exercices
 ├── ressources/                      # Documentation et ressources
 └── README.md                        # Ce fichier
 ```
 
-**Total estimé : 40-42 heures de travail**
+## Comment commencer ?
 
-## 🚀 Démarrage rapide
+### Étape 1 : Consulter les slides
 
-### Visualiser les slides
+1. **Ouvrez le fichier PowerPoint** : `slides/cours-outils-data.pptx`
+   - C'est la version recommandée pour suivre le cours
+   - Vous pouvez aussi utiliser `slides/index.html` dans un navigateur
 
-**Option 1 : Version HTML (pour projection)**
-1. Ouvrir `slides/index.html` dans un navigateur web
-2. Utiliser les flèches pour naviguer entre les slides
-3. Appuyer sur `F` pour le mode plein écran
-4. Appuyer sur `S` pour le mode présentateur
+2. **Lisez attentivement les slides** pour comprendre les concepts
 
-**Option 2 : Version Word/PDF**
-1. Consulter `slides/INSTRUCTIONS_CONVERSION.md` pour les instructions
-2. Convertir `slides/cours-outils-data-format-word.md` en Word ou PDF
-3. Utiliser Pandoc, LibreOffice ou Word pour la conversion
+### Étape 2 : Faire les exercices
 
-### Exécuter les exercices
+1. **Commencez par l'exercice 01** dans l'ordre
+2. **Lisez le README** de chaque exercice - il contient toutes les instructions
+3. **Suivez les étapes** une par une
+4. **Générez les données** si nécessaire avec les scripts fournis
+5. **Testez régulièrement** votre travail
 
-Chaque exercice est **autonome** et contient :
-- Un fichier `README.md` avec les instructions détaillées
-- Un script `generer_donnees.py` pour créer les données nécessaires (si applicable)
-- Toutes les instructions pour installer et utiliser les outils requis
-- Des exemples de code et de solutions
+### Étape 3 : Soumettre vos solutions
 
-**Important** : Tous les exercices sont conçus pour être complétés de manière autonome. Les données sont générées automatiquement via les scripts fournis.
+Chaque exercice contient des instructions détaillées pour soumettre votre travail. En général :
 
-## 🛠️ Technologies utilisées
+1. Créez un dossier `solutions/votre-nom/` dans l'exercice
+2. Placez tous vos fichiers de solution dedans
+3. Suivez les instructions Git pour pousser votre travail
 
-- **Reveal.js** : Pour les présentations interactives
-- **Python** : Pour les exercices pratiques
-- **Jupyter Notebook** : Pour certains exercices interactifs
+**Important** : Remplacez "votre-nom" par votre vrai nom (ex: `solutions/jean-dupont/`)
 
-## 📝 Licence
+## Technologies et outils utilisés
 
-Ce projet est sous licence MIT - voir le fichier [LICENSE](LICENSE) pour plus de détails.
+Cette formation vous fera découvrir et utiliser :
 
-## 📤 Comment soumettre vos réponses aux exercices
+- **Apache Superset** : Business Intelligence open source
+- **Metabase** : Self-Service BI
+- **ELK Stack** : Elasticsearch, Logstash, Kibana pour l'analyse de logs
+- **Apache Spark** : Traitement Big Data distribué
+- **Grafana + Prometheus** : Monitoring et observabilité
+- **Apache Airflow** : Orchestration de workflows
+- **dbt** : Transformation de données moderne
 
-### Méthode 1 : Fork et Pull Request (Recommandé)
+Tous ces outils sont **open source et gratuits**.
+
+## Chaque exercice est autonome
+
+Tous les exercices sont conçus pour être complétés de manière indépendante :
+
+- Instructions détaillées étape par étape
+- Scripts pour générer les données nécessaires
+- Guide d'installation pour chaque outil
+- Exemples et conseils
+- Corrections disponibles (protégées par mot de passe)
+
+## Corrections des exercices
+
+Les corrections sont disponibles pour chaque exercice dans le fichier `correction.py`.
+
+**Mot de passe pour accéder aux corrections : `Abidexercice123`**
+
+Pour utiliser une correction :
+```bash
+cd exercice-XX
+python correction.py
+# Entrez le mot de passe lorsque demandé
+```
+
+**Conseil** : Essayez d'abord de faire l'exercice par vous-même, puis consultez la correction pour comparer votre approche.
+
+## Comment soumettre vos réponses
+
+### Méthode recommandée : Fork et Pull Request
 
 1. **Forker le dépôt** :
-   - Cliquez sur le bouton "Fork" en haut à droite de cette page
-   - Cela crée une copie du dépôt dans votre compte GitHub
+   - Cliquez sur le bouton "Fork" en haut à droite de cette page GitHub
+   - Cela crée une copie du dépôt dans votre compte
 
 2. **Cloner votre fork** :
    ```bash
@@ -94,54 +131,26 @@ Ce projet est sous licence MIT - voir le fichier [LICENSE](LICENSE) pour plus de
 3. **Créer une branche pour votre travail** :
    ```bash
    git checkout -b nom-prenom-exercice-01
-   # Exemple : git checkout -b jean-dupont-exercice-01
    ```
 
 4. **Travailler sur l'exercice** :
-   - Allez dans le dossier de l'exercice (ex: `exercices/exercice-01/`)
-   - Créez un dossier avec votre nom : `exercices/exercice-01/solutions/votre-nom/`
-   - Placez vos fichiers de solution dans ce dossier
+   - Allez dans le dossier de l'exercice
+   - Créez un dossier `solutions/votre-nom/`
+   - Placez vos fichiers de solution dedans
    - Suivez les instructions dans le README de l'exercice
 
-5. **Ajouter et commiter vos changements** :
+5. **Ajouter et commiter** :
    ```bash
    git add .
    git commit -m "Solution exercice 01 - Votre Nom"
-   ```
-
-6. **Pousser vers votre fork** :
-   ```bash
    git push origin nom-prenom-exercice-01
    ```
 
-7. **Créer une Pull Request** :
-   - Allez sur votre fork sur GitHub
-   - Cliquez sur "Compare & pull request"
-   - Remplissez le formulaire avec votre nom et le numéro de l'exercice
-   - Soumettez la Pull Request
+6. **Créer une Pull Request** sur GitHub
 
-### Méthode 2 : Ajout direct dans le dépôt (si vous avez les droits)
+### Structure de soumission
 
-1. **Cloner le dépôt** :
-   ```bash
-   git clone https://github.com/AbidHamza/M2_DI_Outils-de-la-data.git
-   cd M2_DI_Outils-de-la-data
-   ```
-
-2. **Créer votre dossier de solution** :
-   - Créez un dossier dans `exercices/exercice-XX/solutions/votre-nom/`
-   - Placez vos fichiers de solution dedans
-
-3. **Pousser vos changements** :
-   ```bash
-   git add .
-   git commit -m "Solution exercice XX - Votre Nom"
-   git push origin main
-   ```
-
-### Structure de soumission attendue
-
-Pour chaque exercice, créez un dossier avec votre nom dans le dossier `solutions/` :
+Pour chaque exercice, créez un dossier avec votre nom :
 
 ```
 exercices/
@@ -149,32 +158,43 @@ exercices/
     ├── README.md
     ├── donnees/
     └── solutions/
-        ├── jean-dupont/
-        │   ├── solution.py
-        │   ├── resultats.md
-        │   └── README.md (optionnel - explication de votre approche)
-        └── marie-martin/
-            ├── solution.py
-            └── resultats.md
+        └── votre-nom/
+            ├── solution.py (ou autres fichiers)
+            ├── resultats.md
+            └── README.md (optionnel)
 ```
 
-### 📋 Checklist avant de soumettre
+## Checklist avant de soumettre
 
-- [ ] J'ai lu et compris les instructions de l'exercice
+Avant de pousser votre solution, vérifiez que :
+
+- [ ] J'ai lu et compris toutes les instructions de l'exercice
+- [ ] Mon code fonctionne sans erreur
 - [ ] Mon code est commenté et lisible
-- [ ] J'ai testé mon code et il fonctionne
 - [ ] J'ai créé un dossier avec mon nom dans `solutions/`
-- [ ] J'ai ajouté un fichier `resultats.md` ou `README.md` expliquant ma solution
+- [ ] J'ai ajouté un fichier `resultats.md` expliquant ma solution
+- [ ] Tous les fichiers demandés sont présents
 - [ ] Mon commit message est clair et contient mon nom
 
-## 🤝 Contribution
+## Besoin d'aide ?
 
-Les contributions sont les bienvenues ! N'hésitez pas à :
-- Proposer de nouveaux exercices
-- Améliorer la documentation
-- Corriger les erreurs
+Si vous êtes bloqué :
 
-## 📧 Contact
+1. **Relisez attentivement le README** de l'exercice
+2. **Consultez la documentation** dans le dossier `ressources/`
+3. **Ouvrez une issue** sur ce dépôt GitHub pour poser votre question
+4. **Consultez la correction** (après avoir essayé) avec le mot de passe
 
-Pour toute question, ouvrez une issue sur ce dépôt.
+## Licence
 
+Ce projet est sous licence MIT - voir le fichier [LICENSE](LICENSE) pour plus de détails.
+
+## Contact
+
+Pour toute question, n'hésitez pas à ouvrir une issue sur ce dépôt GitHub.
+
+---
+
+**Bon courage et bon apprentissage !**
+
+*Abid Hamza - Formateur*
