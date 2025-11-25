@@ -1,5 +1,5 @@
 """
-CORRECTION DE L'EXERCICE 01
+CORRECTION DE L'EXERCICE 01 - APACHE SUPERSET
 Accès protégé par mot de passe
 """
 
@@ -18,161 +18,129 @@ if not verifier_mot_de_passe():
     exit()
 
 print("\n" + "="*60)
-print("CORRECTION DE L'EXERCICE 01 - MANIPULATION PANDAS")
+print("CORRECTION DE L'EXERCICE 01 - APACHE SUPERSET")
 print("="*60 + "\n")
 
-# ============================================================================
-# ÉTAPE 1 : CHARGEMENT DES DONNÉES
-# ============================================================================
+print("""
+GUIDE COMPLET APACHE SUPERSET
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-print("ÉTAPE 1 : Chargement des données\n")
+1. CONFIGURATION DE LA BASE DE DONNÉES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-import pandas as pd
-import matplotlib.pyplot as plt
-import numpy as np
-from datetime import datetime
+Dans Superset :
+- Data > Databases > + Database
+- Database Name : "Ventes E-commerce"
+- SQLAlchemy URI : sqlite:///donnees/ventes.db
+- Test Connection > Save
 
-# Chargement
-df = pd.read_csv('donnees/ventes.csv')
+2. CRÉATION DU DATASET
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-# Affichage des premières lignes
-print("Premières lignes :")
-print(df.head())
-print("\n" + "-"*60 + "\n")
+- Data > Datasets > + Dataset
+- Sélectionner la base et la table "ventes"
+- Nom : "Ventes"
+- Explorer les colonnes
 
-# Informations générales
-print("Informations sur le DataFrame :")
-print(df.info())
-print("\n" + "-"*60 + "\n")
+3. VISUALISATIONS À CRÉER
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-print("Statistiques descriptives :")
-print(df.describe())
-print("\n" + "-"*60 + "\n")
+VISUALISATION 1 : Bar Chart - CA par mois
+────────────────────────────────────────────────────────────────────────────
+- Type : Bar Chart
+- Time Column : date (groupé par mois)
+- Metric : SUM(montant_total)
+- Titre : "Chiffre d'affaires par mois"
 
-# ============================================================================
-# ÉTAPE 2 : NETTOYAGE DES DONNÉES
-# ============================================================================
+VISUALISATION 2 : Pie Chart - Répartition par catégorie
+────────────────────────────────────────────────────────────────────────────
+- Type : Pie Chart
+- Dimension : categorie
+- Metric : SUM(montant_total)
+- Titre : "Répartition du CA par catégorie"
 
-print("ÉTAPE 2 : Nettoyage des données\n")
+VISUALISATION 3 : Line Chart - Évolution temporelle
+────────────────────────────────────────────────────────────────────────────
+- Type : Line Chart
+- Time Column : date
+- Metric : SUM(montant_total)
+- Titre : "Évolution des ventes"
 
-# Vérification des valeurs manquantes
-print("Valeurs manquantes par colonne :")
-print(df.isnull().sum())
-print("\n" + "-"*60 + "\n")
+VISUALISATION 4 : Table - Top 10 produits
+────────────────────────────────────────────────────────────────────────────
+- Type : Table View
+- Columns : produit, SUM(quantite), SUM(montant_total)
+- Order by : SUM(montant_total) DESC
+- Row limit : 10
 
-# Traitement des valeurs manquantes (si présentes)
-# Dans ce cas, les données générées n'ont pas de valeurs manquantes
-# Mais voici comment on le ferait :
-# df = df.dropna()  # Supprimer les lignes avec valeurs manquantes
-# ou
-# df['colonne'] = df['colonne'].fillna(df['colonne'].mean())  # Remplacer par la moyenne
+VISUALISATION 5 : Stacked Bar - Ventes par catégorie et mois
+────────────────────────────────────────────────────────────────────────────
+- Type : Stacked Bar Chart
+- Time Column : date (par mois)
+- Metric : SUM(montant_total)
+- Stack : categorie
 
-# Vérification des doublons
-nb_doublons = df.duplicated().sum()
-print(f"Nombre de doublons : {nb_doublons}")
-if nb_doublons > 0:
-    df = df.drop_duplicates()
-    print("Doublons supprimés")
-print("\n" + "-"*60 + "\n")
+4. CRÉATION DU DASHBOARD
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-# Conversion de la colonne date
-df['date'] = pd.to_datetime(df['date'])
-print("Colonne date convertie en datetime")
-print(f"Type : {df['date'].dtype}")
-print("\n" + "-"*60 + "\n")
+- Dashboards > + Dashboard
+- Nom : "Analyse des Ventes"
+- Ajouter vos visualisations
+- Organiser par lignes :
+  * Ligne 1 : Vue d'ensemble (métriques clés)
+  * Ligne 2 : Analyses temporelles
+  * Ligne 3 : Analyses par catégorie
+  * Ligne 4 : Détails produits
 
-# Vérification des types
-print("Types de données :")
-print(df.dtypes)
-print("\n" + "-"*60 + "\n")
+5. FILTRES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-# ============================================================================
-# ÉTAPE 3 : ANALYSE EXPLORATOIRE
-# ============================================================================
+- Ajouter un filtre par date
+- Ajouter un filtre par catégorie
+- Tester l'interactivité
 
-print("ÉTAPE 3 : Analyse exploratoire\n")
+6. SQL LAB (BONUS)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-# Statistiques descriptives
-print("Statistiques sur les quantités :")
-print(df['quantite'].describe())
-print("\n" + "-"*60 + "\n")
+Requêtes SQL utiles :
 
-print("Statistiques sur les prix :")
-print(df['prix_unitaire'].describe())
-print("\n" + "-"*60 + "\n")
+-- CA total par mois
+SELECT 
+  strftime('%Y-%m', date) as mois,
+  SUM(montant_total) as ca_mois
+FROM ventes
+GROUP BY mois
+ORDER BY mois;
 
-# Calcul du chiffre d'affaires par produit
-df['ca'] = df['quantite'] * df['prix_unitaire']
+-- Top produits
+SELECT 
+  produit,
+  SUM(quantite) as quantite_totale,
+  SUM(montant_total) as ca_total
+FROM ventes
+GROUP BY produit
+ORDER BY ca_total DESC
+LIMIT 10;
 
-# Top 10 produits par CA
-top_produits = df.groupby('produit')['ca'].sum().sort_values(ascending=False).head(10)
-print("Top 10 produits par chiffre d'affaires :")
-print(top_produits)
-print("\n" + "-"*60 + "\n")
+7. EXPORT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-# CA par mois
-df['mois'] = df['date'].dt.to_period('M')
-ca_par_mois = df.groupby('mois')['ca'].sum().sort_values(ascending=False)
-print("Chiffre d'affaires par mois :")
-print(ca_par_mois)
-print("\n" + "-"*60 + "\n")
+- Dashboard > Settings > Export Dashboard
+- Sauvegarder le JSON
+- Prendre des captures d'écran
 
-# Mois avec le plus de ventes
-mois_max = ca_par_mois.idxmax()
-ca_max = ca_par_mois.max()
-print(f"Mois avec le plus de ventes : {mois_max}")
-print(f"Chiffre d'affaires : {ca_max:,.2f} €")
-print("\n" + "-"*60 + "\n")
+BONNES PRATIQUES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-# ============================================================================
-# ÉTAPE 4 : VISUALISATION
-# ============================================================================
-
-print("ÉTAPE 4 : Création des visualisations\n")
-
-# Graphique 1 : CA par mois
-plt.figure(figsize=(12, 6))
-ca_par_mois.plot(kind='bar', color='steelblue')
-plt.title('Chiffre d\'affaires par mois', fontsize=16, fontweight='bold')
-plt.xlabel('Mois', fontsize=12)
-plt.ylabel('Chiffre d\'affaires (€)', fontsize=12)
-plt.xticks(rotation=45)
-plt.grid(axis='y', alpha=0.3)
-plt.tight_layout()
-plt.savefig('correction_graphique_ventes_mois.png', dpi=300, bbox_inches='tight')
-print("✅ Graphique CA par mois sauvegardé : correction_graphique_ventes_mois.png")
-plt.close()
-
-# Graphique 2 : Répartition par catégorie
-ca_par_categorie = df.groupby('categorie')['ca'].sum()
-plt.figure(figsize=(10, 8))
-plt.pie(ca_par_categorie, labels=ca_par_categorie.index, autopct='%1.1f%%', 
-        startangle=90, colors=['#ff9999', '#66b3ff', '#99ff99'])
-plt.title('Répartition du chiffre d\'affaires par catégorie', 
-          fontsize=16, fontweight='bold')
-plt.axis('equal')
-plt.tight_layout()
-plt.savefig('correction_graphique_categories.png', dpi=300, bbox_inches='tight')
-print("✅ Graphique catégories sauvegardé : correction_graphique_categories.png")
-plt.close()
-
-print("\n" + "-"*60 + "\n")
-
-# ============================================================================
-# RÉSUMÉ
-# ============================================================================
-
-print("RÉSUMÉ DE L'ANALYSE\n")
-
-print(f"Nombre total de transactions : {len(df)}")
-print(f"Période analysée : {df['date'].min().strftime('%Y-%m-%d')} à {df['date'].max().strftime('%Y-%m-%d')}")
-print(f"Chiffre d'affaires total : {df['ca'].sum():,.2f} €")
-print(f"Nombre de produits différents : {df['produit'].nunique()}")
-print(f"Nombre de clients différents : {df['client_id'].nunique()}")
-print(f"\nTop catégorie : {df.groupby('categorie')['ca'].sum().idxmax()}")
-print(f"CA de la top catégorie : {df.groupby('categorie')['ca'].sum().max():,.2f} €")
+✅ Utiliser des noms clairs pour les visualisations
+✅ Organiser le dashboard de manière logique
+✅ Utiliser des couleurs cohérentes
+✅ Ajouter des descriptions
+✅ Tester les filtres
+✅ Documenter les métriques personnalisées
+""")
 
 print("\n" + "="*60)
 print("FIN DE LA CORRECTION")
 print("="*60)
-
+print("\nNote : Adaptez ces instructions à votre configuration.\n")
