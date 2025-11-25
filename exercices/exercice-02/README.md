@@ -118,7 +118,60 @@ Si vous êtes bloqué :
 2. Ouvrez une issue sur le dépôt GitHub
 3. Testez vos requêtes dans un client SQL comme DB Browser for SQLite
 
-## 📤 Soumission
+## 📤 Comment soumettre votre solution
 
-Suivez les instructions dans le README principal du dépôt pour soumettre votre solution.
+### Étapes pour pousser votre exercice sur GitHub
+
+1. **Assurez-vous d'avoir créé la base de données** :
+   ```bash
+   cd exercice-02
+   python creer_base_donnees.py
+   ```
+
+2. **Créez votre dossier de solution** :
+   ```bash
+   mkdir -p solutions/votre-nom
+   cd solutions/votre-nom
+   ```
+
+3. **Placez tous vos fichiers** dans ce dossier :
+   - `solution.py`
+   - `resultats.md`
+   - Les fichiers CSV exportés
+
+4. **Ajoutez et commitez vos fichiers** :
+   ```bash
+   git add solutions/votre-nom/
+   git commit -m "Solution exercice 02 - Votre Nom"
+   ```
+
+5. **Poussez vers GitHub** :
+   ```bash
+   git push origin main
+   ```
+   
+   Si vous avez forké le dépôt :
+   ```bash
+   git push origin votre-branche
+   ```
+
+6. **Créez une Pull Request** (si vous avez forké) ou vos fichiers seront directement visibles dans le dépôt principal.
+
+### Structure de votre soumission
+
+Votre dossier `solutions/votre-nom/` doit contenir :
+- ✅ `solution.py` : Votre code Python complet avec toutes les requêtes
+- ✅ `resultats.md` : Votre analyse et les requêtes SQL utilisées
+- ✅ Les fichiers CSV exportés (si demandés)
+- ✅ Un fichier `README.md` (optionnel) expliquant votre approche
+
+### Vérification
+
+Avant de pousser, vérifiez que :
+- [ ] Toutes les requêtes fonctionnent correctement
+- [ ] Le code est bien commenté
+- [ ] Le fichier `resultats.md` est complet
+- [ ] Les exports CSV sont présents
+
+**Important** : N'oubliez pas de remplacer "votre-nom" par votre vrai nom dans le chemin du dossier !
 

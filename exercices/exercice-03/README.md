@@ -146,7 +146,64 @@ exercice-03/
 - Créez un dashboard de monitoring du pipeline
 - Ajoutez la validation de schéma avec Pydantic
 
-## 📤 Soumission
+## 📤 Comment soumettre votre solution
 
-Suivez les instructions dans le README principal du dépôt pour soumettre votre solution.
+### Étapes pour pousser votre exercice sur GitHub
+
+1. **Préparez votre environnement** :
+   ```bash
+   cd exercice-03
+   ```
+   
+   2. **Installez les dépendances** :
+   ```bash
+   # Installez les outils requis selon les instructions du README
+   ```
+
+2. **Créez votre dossier de solution** :
+   ```bash
+   mkdir -p solutions/votre-nom
+   cd solutions/votre-nom
+   ```
+
+3. **Placez tous vos fichiers** dans ce dossier :
+   - Votre code source
+   - Votre fichier `resultats.md`
+   - Tous les fichiers générés (graphiques, exports, etc.)
+
+4. **Ajoutez et commitez vos fichiers** :
+   ```bash
+   git add solutions/votre-nom/
+   git commit -m "Solution exercice 03 - Votre Nom"
+   ```
+
+5. **Poussez vers GitHub** :
+   ```bash
+   git push origin main
+   ```
+   
+   Si vous avez forké le dépôt :
+   ```bash
+   git push origin votre-branche
+   ```
+
+6. **Créez une Pull Request** (si vous avez forké) ou vos fichiers seront directement visibles dans le dépôt principal.
+
+### Structure de votre soumission
+
+Votre dossier `solutions/votre-nom/` doit contenir :
+- ✅ Tous vos fichiers de code source
+- ✅ `resultats.md` : Votre analyse et résultats
+- ✅ Tous les fichiers générés (graphiques, exports, etc.)
+- ✅ Un fichier `README.md` (optionnel) expliquant votre approche
+
+### Vérification
+
+Avant de pousser, vérifiez que :
+- [ ] Votre code fonctionne sans erreur
+- [ ] Tous les fichiers sont présents
+- [ ] La documentation est complète
+- [ ] Les critères d'évaluation sont remplis
+
+**Important** : N'oubliez pas de remplacer "votre-nom" par votre vrai nom dans le chemin du dossier ! dans le README principal du dépôt pour soumettre votre solution.
 

@@ -171,9 +171,32 @@ atelier-01/
 - Base de données en temps réel
 - Déploiement en production (Heroku, AWS, etc.)
 
-## 📤 Soumission
+## 📤 Comment soumettre votre solution
 
-Suivez les instructions dans le README principal du dépôt pour soumettre votre solution.
+### Étapes pour pousser votre atelier sur GitHub
 
-**Durée estimée totale : 14-16 heures**
+1. **Créez votre dossier de solution** :
+   ```bash
+   cd atelier-01
+   mkdir -p solutions/votre-nom
+   cd solutions/votre-nom
+   ```
+
+2. **Placez tous vos fichiers** dans ce dossier :
+   - Tous vos fichiers de code
+   - Votre documentation
+   - Tous les fichiers générés
+
+3. **Ajoutez et commitez** :
+   ```bash
+   git add solutions/votre-nom/
+   git commit -m "Atelier 01 - Votre Nom"
+   git push origin main
+   ```
+
+4. **Créez une Pull Request** si vous avez forké le dépôt.
+
+**Important** : N'oubliez pas de remplacer "votre-nom" par votre vrai nom ! dans le README principal du dépôt pour soumettre votre solution.
+
+
 
