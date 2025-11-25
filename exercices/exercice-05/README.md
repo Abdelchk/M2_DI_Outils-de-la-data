@@ -1,192 +1,176 @@
-# Exercice 05 : Monitoring avec Grafana
+# Exercice 05 : Grafana + Prometheus - Monitoring complet
 
 ## 🎯 Objectifs
 
-- Comprendre le monitoring et l'observabilité des systèmes de données
-- Installer et configurer Grafana
-- Créer des dashboards de monitoring
-- Visualiser des métriques en temps réel
+- Installer Grafana et Prometheus
+- Configurer Prometheus pour collecter des métriques
+- Créer des dashboards Grafana professionnels
 - Configurer des alertes
+- Maîtriser un stack de monitoring complet
 
 ## 📋 Prérequis
 
-- Python 3.8+
-- Docker (recommandé) ou installation native
-- Connaissances de base en monitoring
+- Docker et Docker Compose
+- 2GB RAM minimum
 
 ## 📦 Installation
 
-### Option 1 : Avec Docker (Recommandé)
+### Avec Docker Compose
 
-```bash
-# Télécharger et lancer Grafana avec Docker
-docker run -d -p 3000:3000 --name=grafana grafana/grafana:latest
+Créez un fichier `docker-compose.yml` :
 
-# Accéder à Grafana : http://localhost:3000
-# Identifiants par défaut : admin / admin
-```
+```yaml
+version: '3.8'
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
 
-### Option 2 : Installation native
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
 
-**Windows** :
-1. Télécharger depuis : https://grafana.com/grafana/download?platform=windows
-2. Installer le fichier .msi
-3. Grafana sera accessible sur http://localhost:3000
-
-**Linux** :
-```bash
-# Ubuntu/Debian
-sudo apt-get install -y software-properties-common
-sudo add-apt-repository "deb https://packages.grafana.com/oss/deb stable main"
-wget -q -O - https://packages.grafana.com/gpg.key | sudo apt-key add -
-sudo apt-get update
-sudo apt-get install grafana
-sudo systemctl start grafana-server
-```
-
-**Mac** :
-```bash
-brew install grafana
-brew services start grafana
+volumes:
+  prometheus_data:
+  grafana_data:
 ```
 
 ## 📊 Données
 
-Les données de monitoring sont générées par le script `generer_metriques.py` qui simule des métriques système (CPU, mémoire, disque, réseau, etc.).
+1. **Générez les métriques** :
+   ```bash
+   cd exercice-05
+   python generer_metriques.py
+   ```
+
+2. **Créez un exporter simple** pour simuler des métriques :
+   ```bash
+   python exporter_metriques.py
+   ```
 
 ## 🎓 Instructions
 
-### Étape 1 : Préparation des données (1h)
+### Étape 1 : Configuration Prometheus
 
-1. Exécutez le script `generer_metriques.py` pour générer les données de monitoring
-2. Le script crée un fichier CSV avec des métriques système simulées
-3. Explorez les données générées
+Créez `prometheus.yml` :
 
-### Étape 2 : Installation et configuration Grafana (1h)
+```yaml
+global:
+  scrape_interval: 15s
 
-1. **Installer Grafana** (voir section Installation ci-dessus)
-2. **Première connexion** :
-   - Ouvrir http://localhost:3000
-   - Identifiants par défaut : `admin` / `admin`
-   - Changer le mot de passe lors de la première connexion
+scrape_configs:
+  - job_name: 'metriques'
+    static_configs:
+      - targets: ['host.docker.internal:8000']
+```
 
-3. **Configurer une source de données** :
-   - Aller dans Configuration > Data Sources
-   - Ajouter une source de type "CSV" ou "MySQL" (selon votre choix)
-   - Configurer la connexion aux données
+### Étape 2 : Démarrer les services
 
-### Étape 3 : Création de panneaux (Panels) (2h)
+```bash
+docker-compose up -d
+```
 
-Créez au moins 5 panneaux différents :
+### Étape 3 : Vérifier Prometheus
 
-1. **Graphique de ligne** : Évolution du CPU dans le temps
-2. **Graphique en barres** : Utilisation de la mémoire par serveur
-3. **Gauge** : Pourcentage d'utilisation du disque
+1. **Accédez à Prometheus** : http://localhost:9090
+2. **Testez une requête** : `up`
+3. **Explorez les métriques disponibles**
+
+### Étape 4 : Configuration Grafana
+
+1. **Accédez à Grafana** : http://localhost:3000
+2. **Identifiants** : admin/admin
+3. **Ajoutez Prometheus comme source** :
+   - Configuration > Data Sources
+   - Add data source > Prometheus
+   - URL : http://prometheus:9090
+   - Save & Test
+
+### Étape 5 : Créer des dashboards
+
+Créez au moins 6 panneaux :
+
+1. **Time Series** : CPU par serveur
+2. **Gauge** : Utilisation mémoire
+3. **Bar Chart** : Top serveurs par charge
 4. **Stat** : Nombre total de requêtes
-5. **Table** : Top 10 des serveurs par charge CPU
+5. **Heatmap** : Distribution des latences
+6. **Table** : Métriques par serveur
 
-### Étape 4 : Création d'un dashboard complet (2h)
+### Étape 6 : Alertes
 
-1. **Organiser les panneaux** :
-   - Créer des lignes (rows) pour organiser
-   - Grouper les métriques par catégorie
-   - Ajouter des titres et descriptions
+1. **Créez des règles d'alerte** :
+   - CPU > 80%
+   - Mémoire < 10%
+   - Disque > 90%
 
-2. **Variables de dashboard** :
-   - Créer une variable pour filtrer par serveur
-   - Créer une variable pour la période (dernière heure, jour, semaine)
-
-3. **Templates et répétition** :
-   - Utiliser les variables pour créer des panneaux répétitifs
-   - Configurer l'auto-refresh (ex: toutes les 30 secondes)
-
-### Étape 5 : Alertes (1h)
-
-1. **Créer des règles d'alerte** :
-   - Alerte si CPU > 80%
-   - Alerte si mémoire < 10% disponible
-   - Alerte si disque > 90% utilisé
-
-2. **Configurer les notifications** :
-   - Configurer un canal de notification (email, Slack, etc.)
-   - Tester les alertes
-
-### Étape 6 : Export et documentation (1h)
-
-1. **Exporter le dashboard** :
-   - Exporter en JSON
-   - Sauvegarder dans votre dossier de solution
-
-2. **Créer un fichier `resultats.md`** avec :
-   - Captures d'écran des dashboards
-   - Explication de la configuration
-   - Description des métriques surveillées
-   - Configuration des alertes
+2. **Configurez les notifications**
 
 ## 📁 Structure attendue
 
 ```
 exercice-05/
 ├── README.md (ce fichier)
-├── donnees/
-│   └── metriques.csv (généré)
-├── solutions/
-│   └── votre-nom/
-│       ├── dashboard.json (dashboard exporté)
-│       ├── screenshots/ (captures d'écran)
-│       ├── resultats.md
-│       └── configuration.md (optionnel)
+├── docker-compose.yml
+├── prometheus.yml
+├── exporter_metriques.py
+├── generer_metriques.py
+└── solutions/
+    └── votre-nom/
+        ├── dashboard.json
+        ├── screenshots/
+        └── resultats.md
 ```
 
 ## ✅ Critères d'évaluation
 
-- [ ] Grafana installé et configuré
-- [ ] Dashboard fonctionnel avec au moins 5 panneaux
-- [ ] Variables de dashboard configurées
-- [ ] Alertes configurées et testées
-- [ ] Documentation complète avec captures d'écran
-- [ ] Dashboard exporté en JSON
+- [ ] Prometheus et Grafana installés
+- [ ] Métriques collectées
+- [ ] Au moins 6 panneaux créés
+- [ ] Alertes configurées
+- [ ] Dashboard exporté
+- [ ] Documentation complète
 
 ## 💡 Conseils
 
-- Utilisez les templates Grafana pour vous inspirer
-- Testez vos requêtes dans l'éditeur de requêtes avant de créer les panneaux
-- Organisez vos dashboards de manière logique
-- Utilisez des couleurs cohérentes pour les métriques
-- Ajoutez des annotations pour marquer les événements importants
-
-## 🚀 Fonctionnalités avancées (Bonus)
-
-- Intégration avec Prometheus pour les métriques en temps réel
-- Création de dashboards interactifs avec des liens entre panneaux
-- Utilisation de plugins Grafana
-- Configuration de sources de données multiples
-- Création de dashboards partagés
+- Utilisez les variables de dashboard
+- Organisez les panneaux par catégorie
+- Testez les alertes
+- Documentez vos requêtes PromQL
 
 ## 📚 Ressources
 
-- Documentation Grafana : https://grafana.com/docs/grafana/latest/
-- Guides de démarrage : https://grafana.com/docs/grafana/latest/getting-started/
-- Galerie de dashboards : https://grafana.com/grafana/dashboards/
+- Documentation Grafana : https://grafana.com/docs/
+- Documentation Prometheus : https://prometheus.io/docs/
+- PromQL : https://prometheus.io/docs/prometheus/latest/querying/basics/
 
 ## 🆘 Aide
 
 Si vous êtes bloqué :
-1. Consultez la documentation officielle Grafana
-2. Regardez les tutoriels vidéo sur YouTube
+1. Vérifiez les logs Docker
+2. Consultez la documentation
 3. Ouvrez une issue sur le dépôt GitHub
 
 ## 📤 Comment soumettre votre solution
 
 ### Étapes pour pousser votre exercice sur GitHub
 
-1. **Préparez votre environnement** :
+1. **Générez les métriques** :
    ```bash
    cd exercice-05
-   ```
-   
-   2. **Générez les données nécessaires** (si applicable) :
-   ```bash
    python generer_metriques.py
    ```
 
@@ -196,46 +180,15 @@ Si vous êtes bloqué :
    cd solutions/votre-nom
    ```
 
-3. **Placez tous vos fichiers** dans ce dossier :
-   - Votre code source
-   - Votre fichier `resultats.md`
-   - Tous les fichiers générés (graphiques, exports, etc.)
+3. **Exportez votre dashboard** depuis Grafana
+4. **Prenez des captures d'écran**
+5. **Créez un fichier `resultats.md`**
 
-4. **Ajoutez et commitez vos fichiers** :
+6. **Ajoutez et commitez** :
    ```bash
    git add solutions/votre-nom/
    git commit -m "Solution exercice 05 - Votre Nom"
-   ```
-
-5. **Poussez vers GitHub** :
-   ```bash
    git push origin main
    ```
-   
-   Si vous avez forké le dépôt :
-   ```bash
-   git push origin votre-branche
-   ```
 
-6. **Créez une Pull Request** (si vous avez forké) ou vos fichiers seront directement visibles dans le dépôt principal.
-
-### Structure de votre soumission
-
-Votre dossier `solutions/votre-nom/` doit contenir :
-- ✅ Tous vos fichiers de code source
-- ✅ `resultats.md` : Votre analyse et résultats
-- ✅ Tous les fichiers générés (graphiques, exports, etc.)
-- ✅ Un fichier `README.md` (optionnel) expliquant votre approche
-
-### Vérification
-
-Avant de pousser, vérifiez que :
-- [ ] Votre code fonctionne sans erreur
-- [ ] Tous les fichiers sont présents
-- [ ] La documentation est complète
-- [ ] Les critères d'évaluation sont remplis
-
-**Important** : N'oubliez pas de remplacer "votre-nom" par votre vrai nom dans le chemin du dossier ! dans le README principal du dépôt pour soumettre votre solution.
-
-
-
+**Important** : N'oubliez pas de remplacer "votre-nom" par votre vrai nom !

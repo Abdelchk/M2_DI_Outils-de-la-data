@@ -1,109 +1,151 @@
-# Exercice 04 : Analyse de données avec Apache Spark
+# Exercice 04 : Apache Spark + Jupyter - Analyse Big Data
 
 ## 🎯 Objectifs
 
-- Comprendre les concepts du Big Data
-- Maîtriser Apache Spark pour le traitement distribué
-- Implémenter des transformations sur de gros volumes de données
-- Optimiser les performances Spark
+- Installer Apache Spark
+- Utiliser Jupyter avec Spark
+- Analyser de gros volumes de données
+- Créer des visualisations interactives
+- Maîtriser le traitement distribué
 
 ## 📋 Prérequis
 
 - Python 3.8+
-- Bibliothèques : pyspark, pandas
 - Java 8+ (requis pour Spark)
-- Connaissances en programmation distribuée
+- 4GB RAM minimum
 
 ## 📦 Installation
 
-```bash
-# Installer Java (si nécessaire)
-# Windows: Télécharger depuis https://adoptium.net/
-# Linux/Mac: sudo apt-get install openjdk-8-jdk
+### Option 1 : Avec PySpark (Recommandé)
 
-pip install pyspark pandas
+```bash
+# Installer PySpark
+pip install pyspark jupyter pandas matplotlib seaborn
+
+# Vérifier l'installation
+python -c "from pyspark.sql import SparkSession; print('OK')"
 ```
+
+### Option 2 : Télécharger Spark
+
+```bash
+# Télécharger Spark depuis https://spark.apache.org/downloads.html
+# Extraire et configurer
+export SPARK_HOME=/chemin/vers/spark
+export PATH=$PATH:$SPARK_HOME/bin
+```
+
+## 📊 Données
+
+1. **Générez les données** :
+   ```bash
+   cd exercice-04
+   python generer_donnees.py
+   ```
 
 ## 🎓 Instructions
 
-### Contexte
+### Étape 1 : Démarrer Jupyter avec Spark
 
-Vous travaillez avec un dataset de transactions e-commerce volumineux. Vous devez utiliser Spark pour analyser ces données de manière distribuée.
+1. **Créez un notebook Jupyter** :
+   ```bash
+   jupyter notebook
+   ```
 
-### Étape 1 : Configuration Spark
+2. **Dans le notebook, configurez Spark** :
+   ```python
+   from pyspark.sql import SparkSession
+   
+   spark = SparkSession.builder \
+       .appName("AnalyseTransactions") \
+       .master("local[4]") \
+       .config("spark.sql.adaptive.enabled", "true") \
+       .getOrCreate()
+   
+   spark
+   ```
 
-1. Créez un script `spark_config.py` qui configure Spark :
-   - Mode local avec plusieurs cores
-   - Configuration de la mémoire
-   - Optimisation des paramètres
+### Étape 2 : Charger les données
 
-2. Créez une session Spark avec les bonnes configurations
+1. **Chargez le CSV** :
+   ```python
+   df = spark.read.csv(
+       "donnees/transactions_large.csv",
+       header=True,
+       inferSchema=True
+   )
+   ```
 
-### Étape 2 : Chargement des données
-
-1. Chargez le dataset de transactions depuis un fichier CSV volumineux
-2. Créez un DataFrame Spark
-3. Explorez le schéma et les données
-4. Affichez les statistiques de base
+2. **Explorez les données** :
+   - Affichez le schéma
+   - Comptez le nombre de lignes
+   - Affichez quelques exemples
 
 ### Étape 3 : Transformations de base
 
 1. **Filtrage** :
-   - Filtrez les transactions supérieures à 100€
-   - Filtrez par période (ex: dernière année)
+   - Transactions > 100€
+   - Transactions d'une période spécifique
 
-2. **Sélection et projection** :
-   - Sélectionnez les colonnes pertinentes
-   - Créez de nouvelles colonnes calculées
+2. **Agrégations** :
+   - CA total par client
+   - Produits les plus vendus
+   - Statistiques par catégorie
 
-3. **Agrégations** :
-   - Calculez le CA total par client
-   - Trouvez les produits les plus vendus
-   - Calculez les statistiques par catégorie
+3. **Fonctions de fenêtre** :
+   - Montant cumulé par client
+   - Top 3 produits par catégorie
 
-### Étape 4 : Jointures et fenêtres
-
-1. **Jointures** :
-   - Joignez les transactions avec une table de référence produits
-   - Joignez avec une table clients
-
-2. **Fonctions de fenêtre (Window Functions)** :
-   - Calculez le montant cumulé par client
-   - Trouvez le top 3 des produits par catégorie
-   - Calculez des moyennes mobiles
-
-### Étape 5 : Optimisation
-
-1. **Partitionnement** :
-   - Repartitionnez les données de manière optimale
-   - Utilisez le partitionnement par colonnes clés
-
-2. **Caching** :
-   - Identifiez les DataFrames à réutiliser
-   - Utilisez le cache Spark efficacement
-
-3. **Broadcast joins** :
-   - Utilisez les broadcast joins pour les petites tables
-
-### Étape 6 : Analyses avancées
+### Étape 4 : Analyses avancées
 
 1. **Analyse temporelle** :
-   - Analysez les tendances par mois/trimestre
-   - Détectez les saisonnalités
+   - CA par mois
+   - Tendances
+   - Saisonnalités
 
 2. **Segmentation** :
-   - Segmentez les clients (RFM analysis)
-   - Identifiez les patterns de comportement
+   - Clients par niveau de CA
+   - Produits par performance
 
 3. **Détection d'anomalies** :
-   - Détectez les transactions suspectes
-   - Identifiez les outliers
+   - Transactions suspectes
+   - Outliers
 
-### Étape 7 : Export et visualisation
+### Étape 5 : Visualisations
 
-1. Exportez les résultats agrégés en CSV/Parquet
-2. Créez des visualisations avec les données agrégées
-3. Documentez vos analyses dans `resultats.md`
+1. **Utilisez Pandas pour visualiser** :
+   ```python
+   # Convertir en Pandas (pour petits résultats)
+   df_pandas = resultat.toPandas()
+   
+   # Créer des graphiques
+   import matplotlib.pyplot as plt
+   import seaborn as sns
+   ```
+
+2. **Créez au moins 3 visualisations** :
+   - Graphique de tendances
+   - Graphique de comparaison
+   - Graphique de répartition
+
+### Étape 6 : Export des résultats
+
+1. **Exportez en CSV** :
+   ```python
+   resultat.coalesce(1).write.csv(
+       "output/resultats",
+       header=True,
+       mode="overwrite"
+   )
+   ```
+
+2. **Exportez en Parquet** (recommandé) :
+   ```python
+   resultat.write.parquet(
+       "output/resultats_parquet",
+       mode="overwrite"
+   )
+   ```
 
 ## 📁 Structure attendue
 
@@ -111,53 +153,55 @@ Vous travaillez avec un dataset de transactions e-commerce volumineux. Vous deve
 exercice-04/
 ├── README.md (ce fichier)
 ├── donnees/
-│   └── transactions_large.csv (généré par le script)
-├── solutions/
-│   └── votre-nom/
-│       ├── spark_config.py
-│       ├── analysis.py
-│       ├── generate_data.py (pour générer les données de test)
-│       ├── resultats.md
-│       └── outputs/
-│           ├── ca_par_client.csv
-│           └── produits_populaires.parquet
+│   └── transactions_large.csv
+├── notebooks/
+│   └── analyse_spark.ipynb
+└── solutions/
+    └── votre-nom/
+        ├── notebook.ipynb
+        ├── output/ (résultats exportés)
+        ├── resultats.md
+        └── visualisations/ (graphiques)
 ```
 
 ## ✅ Critères d'évaluation
 
-- [ ] Configuration Spark optimale
-- [ ] Transformations efficaces
-- [ ] Utilisation appropriée des fonctions Spark
-- [ ] Optimisations implémentées
-- [ ] Analyses pertinentes
-- [ ] Code bien documenté
+- [ ] Spark installé et fonctionnel
+- [ ] Notebook Jupyter créé
+- [ ] Données chargées et analysées
+- [ ] Au moins 5 analyses effectuées
+- [ ] Visualisations créées
+- [ ] Résultats exportés
+- [ ] Documentation complète
 
 ## 💡 Conseils
 
-- Utilisez `spark.sql()` pour les requêtes SQL complexes
-- Évitez les collect() sur de gros datasets
-- Utilisez les colonnes typées plutôt que les RDD
-- Monitorer l'UI Spark (http://localhost:4040)
-- Pensez à la persistance (cache, checkpoint)
+- Utilisez les DataFrames plutôt que les RDD
+- Évitez les collect() sur gros datasets
+- Utilisez le cache judicieusement
+- Testez avec de petits échantillons d'abord
+- Utilisez explain() pour voir le plan d'exécution
 
-## 🚀 Niveau avancé (Bonus)
+## 📚 Ressources
 
-- Implémentez un streaming avec Spark Streaming
-- Utilisez MLlib pour des analyses prédictives
-- Déployez sur un cluster (local ou cloud)
-- Créez des UDF (User Defined Functions) optimisées
+- Documentation Spark : https://spark.apache.org/docs/
+- Guide PySpark : https://spark.apache.org/docs/latest/api/python/
+- Tutoriels : https://spark.apache.org/docs/latest/quick-start.html
+
+## 🆘 Aide
+
+Si vous êtes bloqué :
+1. Vérifiez que Java est installé
+2. Consultez la documentation officielle
+3. Ouvrez une issue sur le dépôt GitHub
 
 ## 📤 Comment soumettre votre solution
 
 ### Étapes pour pousser votre exercice sur GitHub
 
-1. **Préparez votre environnement** :
+1. **Générez les données** :
    ```bash
    cd exercice-04
-   ```
-   
-   2. **Générez les données nécessaires** (si applicable) :
-   ```bash
    python generer_donnees.py
    ```
 
@@ -167,44 +211,15 @@ exercice-04/
    cd solutions/votre-nom
    ```
 
-3. **Placez tous vos fichiers** dans ce dossier :
-   - Votre code source
-   - Votre fichier `resultats.md`
-   - Tous les fichiers générés (graphiques, exports, etc.)
+3. **Sauvegardez votre notebook Jupyter**
+4. **Exportez vos résultats et visualisations**
+5. **Créez un fichier `resultats.md`**
 
-4. **Ajoutez et commitez vos fichiers** :
+6. **Ajoutez et commitez** :
    ```bash
    git add solutions/votre-nom/
    git commit -m "Solution exercice 04 - Votre Nom"
-   ```
-
-5. **Poussez vers GitHub** :
-   ```bash
    git push origin main
    ```
-   
-   Si vous avez forké le dépôt :
-   ```bash
-   git push origin votre-branche
-   ```
 
-6. **Créez une Pull Request** (si vous avez forké) ou vos fichiers seront directement visibles dans le dépôt principal.
-
-### Structure de votre soumission
-
-Votre dossier `solutions/votre-nom/` doit contenir :
-- ✅ Tous vos fichiers de code source
-- ✅ `resultats.md` : Votre analyse et résultats
-- ✅ Tous les fichiers générés (graphiques, exports, etc.)
-- ✅ Un fichier `README.md` (optionnel) expliquant votre approche
-
-### Vérification
-
-Avant de pousser, vérifiez que :
-- [ ] Votre code fonctionne sans erreur
-- [ ] Tous les fichiers sont présents
-- [ ] La documentation est complète
-- [ ] Les critères d'évaluation sont remplis
-
-**Important** : N'oubliez pas de remplacer "votre-nom" par votre vrai nom dans le chemin du dossier ! dans le README principal du dépôt pour soumettre votre solution.
-
+**Important** : N'oubliez pas de remplacer "votre-nom" par votre vrai nom !

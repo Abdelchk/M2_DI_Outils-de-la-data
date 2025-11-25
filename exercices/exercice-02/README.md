@@ -1,80 +1,158 @@
-# Exercice 02 : Analyse de données avec SQL
+# Exercice 02 : Metabase - Self-Service Business Intelligence
 
 ## 🎯 Objectifs
 
-- Maîtriser les requêtes SQL de base et avancées
-- Apprendre à joindre des tables
-- Utiliser des fonctions d'agrégation
-- Créer des vues et des requêtes complexes
+- Installer et configurer Metabase
+- Créer des questions (queries) interactives
+- Construire des dashboards sans code
+- Maîtriser un outil BI self-service populaire
 
 ## 📋 Prérequis
 
-- Python 3.8+
-- Bibliothèques : sqlite3 (incluse), pandas
-- Connaissances de base en SQL
+- Java 11+ (pour Metabase)
+- Docker (recommandé) ou installation native
+- Connaissances de base en SQL (optionnel)
 
 ## 📦 Installation
 
+### Option 1 : Avec Docker (Recommandé)
+
 ```bash
-pip install pandas
+# Lancer Metabase
+docker run -d -p 3000:3000 --name metabase metabase/metabase
+
+# Accéder à Metabase : http://localhost:3000
+# Configuration initiale au premier accès
 ```
 
-## 📊 Base de données
+### Option 2 : Installation native
 
-Une base de données SQLite est fournie dans `donnees/boutique.db` avec les tables suivantes :
-- `clients` : Informations sur les clients
-- `produits` : Catalogue des produits
-- `commandes` : Historique des commandes
-- `details_commandes` : Détails de chaque commande
+```bash
+# Télécharger le JAR depuis https://www.metabase.com/start/oss/
+# Lancer Metabase
+java -jar metabase.jar
+
+# Accéder à http://localhost:3000
+```
+
+## 📊 Données
+
+1. **Créez la base de données** :
+   ```bash
+   cd exercice-02
+   python creer_base_donnees.py
+   ```
 
 ## 🎓 Instructions
 
-### Étape 1 : Exploration de la base de données
+### Étape 1 : Configuration initiale
 
-1. Créez un script Python `solution.py` dans votre dossier de solution
-2. Connectez-vous à la base de données SQLite
-3. Listez toutes les tables disponibles
-4. Affichez la structure de chaque table (colonnes et types)
-5. Comptez le nombre d'enregistrements dans chaque table
+1. **Accédez à Metabase** : http://localhost:3000
+2. **Première configuration** :
+   - Créez un compte administrateur
+   - Choisissez votre langue
+   - Configurez les préférences
 
-### Étape 2 : Requêtes de base
+### Étape 2 : Ajouter une base de données
 
-1. **Sélection simple** : Affichez tous les clients avec leur nom et email
-2. **Filtrage** : Trouvez tous les produits dont le prix est supérieur à 100€
-3. **Tri** : Listez les commandes triées par date (plus récentes en premier)
-4. **Limite** : Affichez les 5 produits les plus chers
+1. **Allez dans Settings > Admin > Databases**
+2. **Cliquez sur "Add database"**
+3. **Sélectionnez SQLite**
+4. **Configurez la connexion** :
+   - Nom : "Boutique E-commerce"
+   - Fichier : Chemin vers `donnees/boutique.db`
+   - Cliquez sur "Save"
 
-### Étape 3 : Requêtes avec agrégation
+### Étape 3 : Explorer les données
 
-1. Calculez le nombre total de commandes
-2. Calculez le montant total de toutes les commandes
-3. Trouvez le panier moyen (montant moyen par commande)
-4. Comptez le nombre de commandes par client
-5. Trouvez le client qui a dépensé le plus
+1. **Allez dans Browse Data**
+2. **Explorez les tables** :
+   - `clients`
+   - `produits`
+   - `commandes`
+   - `details_commandes`
+3. **Visualisez les données** de chaque table
 
-### Étape 4 : Jointures
+### Étape 4 : Créer des Questions (Queries)
 
-1. Affichez toutes les commandes avec les noms des clients
-2. Listez tous les produits commandés avec leurs détails (nom, prix, quantité)
-3. Créez une vue qui montre le chiffre d'affaires par client avec leurs informations
-4. Trouvez les produits les plus vendus (en quantité)
+Créez au moins 6 questions différentes :
 
-### Étape 5 : Requêtes complexes
+1. **Question simple** : Liste des clients
+   - Table : `clients`
+   - Affichez : nom, prénom, email, ville
 
-1. Trouvez les clients qui n'ont jamais passé de commande
-2. Calculez le chiffre d'affaires par mois
-3. Identifiez les 3 meilleurs clients (en termes de CA)
-4. Trouvez les produits qui n'ont jamais été commandés
-5. Calculez le panier moyen par catégorie de produit
+2. **Question avec filtre** : Produits > 100€
+   - Table : `produits`
+   - Filtre : `prix > 100`
+   - Trier par prix décroissant
 
-### Étape 6 : Export et analyse
+3. **Question avec agrégation** : CA total
+   - Table : `commandes`
+   - Agrégation : SUM de `montant_total`
 
-1. Exportez les résultats des requêtes importantes en CSV
-2. Créez un fichier `resultats.md` avec :
-   - Un résumé de votre analyse
-   - Les requêtes SQL utilisées (avec explications)
-   - Les principales découvertes
-   - Les statistiques clés
+4. **Question avec jointure** : Commandes avec noms clients
+   - Tables : `commandes` + `clients`
+   - Jointure sur `client_id`
+   - Affichez : commande_id, date, montant, nom client
+
+5. **Question SQL personnalisée** : Top 5 clients par CA
+   ```sql
+   SELECT 
+     c.nom, 
+     c.prenom, 
+     SUM(co.montant_total) as ca_total
+   FROM clients c
+   JOIN commandes co ON c.client_id = co.client_id
+   GROUP BY c.client_id
+   ORDER BY ca_total DESC
+   LIMIT 5
+   ```
+
+6. **Question avec calcul** : Panier moyen par catégorie
+   - Utilisez les jointures
+   - Calculez le panier moyen
+
+### Étape 5 : Créer des visualisations
+
+Pour chaque question, créez une visualisation appropriée :
+
+1. **Table** : Pour les listes
+2. **Bar Chart** : Pour les comparaisons
+3. **Line Chart** : Pour les tendances temporelles
+4. **Pie Chart** : Pour les répartitions
+5. **Number** : Pour les métriques uniques
+
+### Étape 6 : Créer un Dashboard
+
+1. **Créez un nouveau dashboard** : "Analyse Boutique"
+2. **Ajoutez vos questions** :
+   - Glissez-déposez vos questions
+   - Organisez-les par thème
+   - Ajustez les tailles
+
+3. **Ajoutez des filtres** :
+   - Filtre par date
+   - Filtre par catégorie de produit
+   - Filtre par client
+
+4. **Configurez les paramètres** :
+   - Auto-refresh
+   - Liens entre questions
+   - Actions personnalisées
+
+### Étape 7 : Fonctionnalités avancées
+
+1. **Créer des modèles de données** :
+   - Définir les relations entre tables
+   - Créer des métriques réutilisables
+
+2. **Utiliser les alertes** :
+   - Créer une alerte si CA < seuil
+   - Configurer les notifications
+
+3. **Partager le dashboard** :
+   - Créer un lien public (optionnel)
+   - Exporter les données
 
 ## 📁 Structure attendue
 
@@ -83,46 +161,49 @@ exercice-02/
 ├── README.md (ce fichier)
 ├── donnees/
 │   └── boutique.db
-└── solutions/
-    └── votre-nom/
-        ├── solution.py
-        ├── resultats.md
-        ├── ca_par_client.csv
-        └── produits_populaires.csv
+├── solutions/
+│   └── votre-nom/
+│       ├── screenshots/ (captures d'écran)
+│       ├── questions_export.json (si possible)
+│       ├── resultats.md
+│       └── requetes_sql.md
 ```
 
 ## ✅ Critères d'évaluation
 
-- [ ] Toutes les requêtes fonctionnent correctement
-- [ ] Code bien commenté et organisé
-- [ ] Utilisation appropriée des jointures
-- [ ] Les requêtes complexes sont optimisées
-- [ ] Le fichier `resultats.md` est complet
+- [ ] Metabase installé et configuré
+- [ ] Base de données connectée
+- [ ] Au moins 6 questions créées
+- [ ] Visualisations appropriées pour chaque question
+- [ ] Dashboard fonctionnel avec filtres
+- [ ] Documentation complète
 
 ## 💡 Conseils
 
-- Utilisez `pd.read_sql_query()` pour exécuter des requêtes et obtenir des DataFrames
-- Testez vos requêtes une par une avant de les intégrer dans le script
-- Utilisez des alias de tables pour rendre les requêtes plus lisibles
-- Documentez chaque requête avec un commentaire expliquant son objectif
+- Utilisez l'éditeur visuel pour commencer
+- Passez à SQL pour les requêtes complexes
+- Testez vos questions avant de les ajouter au dashboard
+- Organisez vos dashboards par thème métier
+- Utilisez les modèles de données pour simplifier
 
-## 📚 Ressources SQL
+## 📚 Ressources
 
-- Documentation SQLite : https://www.sqlite.org/docs.html
-- Tutoriel SQL : https://www.w3schools.com/sql/
+- Documentation Metabase : https://www.metabase.com/docs/
+- Guide de démarrage : https://www.metabase.com/learn/getting-started
+- Exemples de questions : https://www.metabase.com/learn
 
 ## 🆘 Aide
 
 Si vous êtes bloqué :
-1. Consultez la documentation SQLite
-2. Ouvrez une issue sur le dépôt GitHub
-3. Testez vos requêtes dans un client SQL comme DB Browser for SQLite
+1. Consultez la documentation officielle
+2. Utilisez le mode "Simple question" pour commencer
+3. Ouvrez une issue sur le dépôt GitHub
 
 ## 📤 Comment soumettre votre solution
 
 ### Étapes pour pousser votre exercice sur GitHub
 
-1. **Assurez-vous d'avoir créé la base de données** :
+1. **Créez la base de données** :
    ```bash
    cd exercice-02
    python creer_base_donnees.py
@@ -134,44 +215,21 @@ Si vous êtes bloqué :
    cd solutions/votre-nom
    ```
 
-3. **Placez tous vos fichiers** dans ce dossier :
-   - `solution.py`
-   - `resultats.md`
-   - Les fichiers CSV exportés
+3. **Prenez des captures d'écran** :
+   - Vos questions
+   - Votre dashboard
+   - Les visualisations
 
-4. **Ajoutez et commitez vos fichiers** :
+4. **Créez un fichier `resultats.md`** avec :
+   - Description de vos questions
+   - Analyses effectuées
+   - Insights découverts
+
+5. **Ajoutez et commitez** :
    ```bash
    git add solutions/votre-nom/
    git commit -m "Solution exercice 02 - Votre Nom"
-   ```
-
-5. **Poussez vers GitHub** :
-   ```bash
    git push origin main
    ```
-   
-   Si vous avez forké le dépôt :
-   ```bash
-   git push origin votre-branche
-   ```
 
-6. **Créez une Pull Request** (si vous avez forké) ou vos fichiers seront directement visibles dans le dépôt principal.
-
-### Structure de votre soumission
-
-Votre dossier `solutions/votre-nom/` doit contenir :
-- ✅ `solution.py` : Votre code Python complet avec toutes les requêtes
-- ✅ `resultats.md` : Votre analyse et les requêtes SQL utilisées
-- ✅ Les fichiers CSV exportés (si demandés)
-- ✅ Un fichier `README.md` (optionnel) expliquant votre approche
-
-### Vérification
-
-Avant de pousser, vérifiez que :
-- [ ] Toutes les requêtes fonctionnent correctement
-- [ ] Le code est bien commenté
-- [ ] Le fichier `resultats.md` est complet
-- [ ] Les exports CSV sont présents
-
-**Important** : N'oubliez pas de remplacer "votre-nom" par votre vrai nom dans le chemin du dossier !
-
+**Important** : N'oubliez pas de remplacer "votre-nom" par votre vrai nom !

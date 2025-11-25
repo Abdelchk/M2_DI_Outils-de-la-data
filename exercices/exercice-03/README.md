@@ -1,163 +1,247 @@
-# Exercice 03 : Pipeline ETL avec Python
+# Exercice 03 : ELK Stack (Elasticsearch, Logstash, Kibana) - Analyse de logs
 
 ## 🎯 Objectifs
 
-- Comprendre le concept de pipeline ETL (Extract, Transform, Load)
-- Implémenter un pipeline complet de traitement de données
-- Gérer les erreurs et la validation des données
-- Optimiser les performances du pipeline
+- Installer et configurer l'ELK Stack
+- Ingérer des données avec Logstash
+- Indexer dans Elasticsearch
+- Visualiser dans Kibana
+- Maîtriser un stack d'analyse de données complet
 
 ## 📋 Prérequis
 
-- Python 3.8+
-- Bibliothèques : pandas, requests, sqlalchemy
-- Connaissances en programmation orientée objet
+- Docker et Docker Compose
+- 4GB RAM minimum
+- Connaissances de base en JSON
 
 ## 📦 Installation
 
-```bash
-pip install pandas requests sqlalchemy
+### Avec Docker Compose (Recommandé)
+
+Créez un fichier `docker-compose.yml` :
+
+```yaml
+version: '3.8'
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    ports:
+      - "9200:9200"
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.11.0
+    ports:
+      - "5044:5044"
+    volumes:
+      - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+    depends_on:
+      - elasticsearch
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.11.0
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    depends_on:
+      - elasticsearch
+
+volumes:
+  es_data:
 ```
+
+Lancez avec :
+```bash
+docker-compose up -d
+```
+
+## 📊 Données
+
+1. **Générez des logs simulés** :
+   ```bash
+   cd exercice-03
+   python generer_logs.py
+   ```
 
 ## 🎓 Instructions
 
-### Contexte
+### Étape 1 : Configuration Logstash
 
-Vous devez créer un pipeline ETL qui :
-1. **Extract** : Récupère des données depuis plusieurs sources (API, fichiers CSV, base de données)
-2. **Transform** : Nettoie, transforme et enrichit les données
-3. **Load** : Charge les données transformées dans une destination finale
+Créez un fichier `logstash.conf` :
 
-### Étape 1 : Architecture du pipeline
+```ruby
+input {
+  file {
+    path => "/usr/share/logstash/data/logs/*.log"
+    start_position => "beginning"
+    codec => "json"
+  }
+}
 
-1. Créez une structure de classes pour votre pipeline :
-   - `Extractor` : Classe abstraite pour l'extraction
-   - `Transformer` : Classe pour les transformations
-   - `Loader` : Classe abstraite pour le chargement
-   - `ETLPipeline` : Classe principale qui orchestre le tout
+filter {
+  date {
+    match => [ "timestamp", "ISO8601" ]
+  }
+  
+  mutate {
+    convert => {
+      "status_code" => "integer"
+      "response_time" => "float"
+    }
+  }
+}
 
-2. Implémentez le pattern Strategy pour permettre différents types d'extracteurs et loaders
+output {
+  elasticsearch {
+    hosts => ["elasticsearch:9200"]
+    index => "logs-%{+YYYY.MM.dd}"
+  }
+}
+```
 
-### Étape 2 : Extraction (Extract)
+### Étape 2 : Vérifier Elasticsearch
 
-Créez plusieurs extracteurs :
+1. **Vérifiez qu'Elasticsearch fonctionne** :
+   ```bash
+   curl http://localhost:9200
+   ```
 
-1. **CSVExtractor** : Lit des données depuis un fichier CSV
-2. **APIExtractor** : Récupère des données depuis une API REST
-3. **DatabaseExtractor** : Extrait des données depuis une base de données SQLite
+2. **Vérifiez les indices créés** :
+   ```bash
+   curl http://localhost:9200/_cat/indices?v
+   ```
 
-### Étape 3 : Transformation (Transform)
+### Étape 3 : Configuration Kibana
 
-Implémentez les transformations suivantes :
+1. **Accédez à Kibana** : http://localhost:5601
+2. **Configurez l'index pattern** :
+   - Allez dans Stack Management > Index Patterns
+   - Créez un pattern : `logs-*`
+   - Sélectionnez `@timestamp` comme time field
 
-1. **Nettoyage** :
-   - Suppression des doublons
-   - Gestion des valeurs manquantes
-   - Normalisation des formats (dates, nombres, textes)
+### Étape 4 : Créer des visualisations dans Kibana
 
-2. **Enrichissement** :
-   - Ajout de colonnes calculées
-   - Jointures avec des données de référence
-   - Calculs statistiques
+Créez au moins 5 visualisations :
 
-3. **Validation** :
-   - Vérification des types de données
-   - Validation des contraintes métier
-   - Détection d'anomalies
+1. **Line Chart** : Nombre de requêtes par heure
+   - Metric : Count
+   - Bucket : Date Histogram sur `@timestamp`
 
-4. **Agrégation** :
-   - Regroupements par catégories
-   - Calculs de métriques agrégées
+2. **Pie Chart** : Répartition par status code
+   - Slice : Terms sur `status_code`
 
-### Étape 4 : Chargement (Load)
+3. **Bar Chart** : Top 10 endpoints
+   - X-axis : Terms sur `endpoint`
+   - Y-axis : Count
 
-Créez plusieurs loaders :
+4. **Metric** : Temps de réponse moyen
+   - Metric : Average de `response_time`
 
-1. **CSVLoader** : Sauvegarde dans un fichier CSV
-2. **DatabaseLoader** : Charge dans une base de données SQLite
-3. **JSONLoader** : Exporte en format JSON
+5. **Data Table** : Requêtes avec erreurs (status >= 400)
+   - Filtre : `status_code >= 400`
+   - Colonnes : timestamp, endpoint, status_code, response_time
 
-### Étape 5 : Orchestration
+### Étape 5 : Créer un Dashboard
 
-1. Créez la classe `ETLPipeline` qui :
-   - Configure les extracteurs, transformers et loaders
-   - Exécute le pipeline étape par étape
-   - Gère les erreurs et les logs
-   - Fournit des métriques d'exécution
+1. **Créez un dashboard** : "Monitoring Application"
+2. **Ajoutez vos visualisations**
+3. **Configurez les filtres** :
+   - Filtre temporel
+   - Filtre par status code
+   - Filtre par endpoint
 
-2. Implémentez un système de logging pour tracer l'exécution
+### Étape 6 : Requêtes Elasticsearch
 
-3. Ajoutez la gestion des erreurs avec retry logic
+Testez des requêtes dans Dev Tools :
 
-### Étape 6 : Tests et validation
+1. **Recherche simple** :
+```json
+GET /logs-*/_search
+{
+  "query": {
+    "match": {
+      "endpoint": "/api/users"
+    }
+  }
+}
+```
 
-1. Créez des tests unitaires pour chaque composant
-2. Testez le pipeline complet avec des données réelles
-3. Mesurez les performances (temps d'exécution, mémoire)
-4. Documentez les résultats
+2. **Agrégation** :
+```json
+GET /logs-*/_search
+{
+  "size": 0,
+  "aggs": {
+    "status_codes": {
+      "terms": {
+        "field": "status_code"
+      }
+    }
+  }
+}
+```
 
 ## 📁 Structure attendue
 
 ```
 exercice-03/
 ├── README.md (ce fichier)
+├── docker-compose.yml
+├── logstash.conf
+├── generer_logs.py
 ├── donnees/
-│   ├── source1.csv
-│   ├── source2.csv
-│   └── reference_data.json
-├── solutions/
-│   └── votre-nom/
-│       ├── pipeline/
-│       │   ├── __init__.py
-│       │   ├── extractors.py
-│       │   ├── transformers.py
-│       │   ├── loaders.py
-│       │   └── pipeline.py
-│       ├── tests/
-│       │   └── test_pipeline.py
-│       ├── main.py
-│       ├── config.py
-│       ├── resultats.md
-│       └── logs/
+│   └── logs/ (fichiers de logs)
+└── solutions/
+    └── votre-nom/
+        ├── screenshots/
+        ├── dashboard_export.json
+        ├── resultats.md
+        └── requetes_elasticsearch.md
 ```
 
 ## ✅ Critères d'évaluation
 
-- [ ] Architecture propre et modulaire
-- [ ] Code respectant les principes SOLID
-- [ ] Gestion d'erreurs robuste
-- [ ] Logging complet
-- [ ] Tests unitaires présents
-- [ ] Documentation claire
-- [ ] Pipeline fonctionnel end-to-end
+- [ ] ELK Stack installé et fonctionnel
+- [ ] Logstash ingère les données
+- [ ] Elasticsearch indexe correctement
+- [ ] Au moins 5 visualisations créées dans Kibana
+- [ ] Dashboard fonctionnel
+- [ ] Documentation complète
 
 ## 💡 Conseils
 
-- Utilisez des classes abstraites (ABC) pour définir les interfaces
-- Implémentez le pattern Strategy pour la flexibilité
-- Utilisez le module `logging` pour les logs
-- Pensez à la performance : utilisez des générateurs pour les gros volumes
-- Documentez chaque classe et méthode
+- Commencez avec peu de données pour tester
+- Utilisez Dev Tools pour tester les requêtes
+- Explorez les différents types de visualisations
+- Utilisez les filtres pour affiner vos analyses
+- Documentez vos requêtes Elasticsearch
 
-## 🚀 Niveau avancé (Bonus)
+## 📚 Ressources
 
-- Ajoutez un système de parallélisation (multiprocessing)
-- Implémentez un système de cache pour éviter les re-extractions
-- Créez un dashboard de monitoring du pipeline
-- Ajoutez la validation de schéma avec Pydantic
+- Documentation ELK : https://www.elastic.co/guide/
+- Guide Kibana : https://www.elastic.co/guide/en/kibana/current/index.html
+- Guide Logstash : https://www.elastic.co/guide/en/logstash/current/index.html
+
+## 🆘 Aide
+
+Si vous êtes bloqué :
+1. Vérifiez les logs des containers Docker
+2. Consultez la documentation officielle
+3. Ouvrez une issue sur le dépôt GitHub
 
 ## 📤 Comment soumettre votre solution
 
 ### Étapes pour pousser votre exercice sur GitHub
 
-1. **Préparez votre environnement** :
+1. **Générez les logs** :
    ```bash
    cd exercice-03
-   ```
-   
-   2. **Installez les dépendances** :
-   ```bash
-   # Installez les outils requis selon les instructions du README
+   python generer_logs.py
    ```
 
 2. **Créez votre dossier de solution** :
@@ -166,44 +250,15 @@ exercice-03/
    cd solutions/votre-nom
    ```
 
-3. **Placez tous vos fichiers** dans ce dossier :
-   - Votre code source
-   - Votre fichier `resultats.md`
-   - Tous les fichiers générés (graphiques, exports, etc.)
+3. **Exportez votre dashboard** depuis Kibana
+4. **Prenez des captures d'écran**
+5. **Créez un fichier `resultats.md`**
 
-4. **Ajoutez et commitez vos fichiers** :
+6. **Ajoutez et commitez** :
    ```bash
    git add solutions/votre-nom/
    git commit -m "Solution exercice 03 - Votre Nom"
-   ```
-
-5. **Poussez vers GitHub** :
-   ```bash
    git push origin main
    ```
-   
-   Si vous avez forké le dépôt :
-   ```bash
-   git push origin votre-branche
-   ```
 
-6. **Créez une Pull Request** (si vous avez forké) ou vos fichiers seront directement visibles dans le dépôt principal.
-
-### Structure de votre soumission
-
-Votre dossier `solutions/votre-nom/` doit contenir :
-- ✅ Tous vos fichiers de code source
-- ✅ `resultats.md` : Votre analyse et résultats
-- ✅ Tous les fichiers générés (graphiques, exports, etc.)
-- ✅ Un fichier `README.md` (optionnel) expliquant votre approche
-
-### Vérification
-
-Avant de pousser, vérifiez que :
-- [ ] Votre code fonctionne sans erreur
-- [ ] Tous les fichiers sont présents
-- [ ] La documentation est complète
-- [ ] Les critères d'évaluation sont remplis
-
-**Important** : N'oubliez pas de remplacer "votre-nom" par votre vrai nom dans le chemin du dossier ! dans le README principal du dépôt pour soumettre votre solution.
-
+**Important** : N'oubliez pas de remplacer "votre-nom" par votre vrai nom !
