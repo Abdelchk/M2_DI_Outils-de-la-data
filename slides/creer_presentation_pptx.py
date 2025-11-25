@@ -19,7 +19,7 @@ def creer_presentation():
     """Crée une présentation PowerPoint depuis le markdown"""
     
     # Lire le fichier markdown
-    with open('cours-outils-data-format-word.md', 'r', encoding='utf-8') as f:
+    with open('cours-complet-50-slides.md', 'r', encoding='utf-8') as f:
         content = f.read()
     
     # Créer une présentation
@@ -73,25 +73,15 @@ def creer_presentation():
     # Slide de titre
     slide_titre("OUTILS DE LA DATA", "Master 2 - Data Intelligence\nFormateur : Abid Hamza")
     
-    # Parser le markdown et créer les slides
-    sections = re.split(r'^# ', content, flags=re.MULTILINE)
+    # Parser le markdown - format avec SLIDE X
+    slides_data = re.findall(r'^# SLIDE \d+ : (.+?)\n\n(.*?)(?=^# SLIDE|\Z)', content, re.MULTILINE | re.DOTALL)
     
-    for section in sections[1:]:  # Ignorer le premier (vide)
-        lines = section.split('\n')
-        titre = lines[0].strip()
-        
-        if not titre or titre.startswith('OUTILS DE LA DATA'):
-            continue
-        
-        # Ignorer certaines sections
-        if titre in ['PLAN DU COURS', 'RESSOURCES ET RÉFÉRENCES', 'CONCLUSION', 'MERCI']:
-            continue
-        
-        # Extraire le contenu
+    for titre, contenu_raw in slides_data:
+        # Nettoyer le contenu
         contenu_lines = []
-        for line in lines[1:]:
+        for line in contenu_raw.split('\n'):
             line = line.strip()
-            if line and not line.startswith('━'):
+            if line and not line.startswith('━') and not line.startswith('**'):
                 # Nettoyer le markdown
                 line = re.sub(r'^\*\*', '', line)
                 line = re.sub(r'\*\*$', '', line)
@@ -99,9 +89,13 @@ def creer_presentation():
                 line = re.sub(r'^## ', '', line)
                 line = re.sub(r'^- ', '• ', line)
                 line = re.sub(r'^\d+\. ', '', line)
-                contenu_lines.append(line)
+                # Préserver les schémas ASCII
+                if line.startswith('┌') or line.startswith('│') or line.startswith('└') or line.startswith(' '):
+                    contenu_lines.append(line)
+                elif line:
+                    contenu_lines.append(line)
         
-        contenu = '\n'.join(contenu_lines[:15])  # Limiter à 15 lignes par slide
+        contenu = '\n'.join(contenu_lines[:20])  # Limiter à 20 lignes par slide
         
         if contenu.strip():
             slide_contenu(titre, contenu)
@@ -110,8 +104,9 @@ def creer_presentation():
     slide_titre("MERCI POUR VOTRE ATTENTION", "Master 2 - Data Intelligence\nOutils de la Data")
     
     # Sauvegarder
-    prs.save('cours-outils-data.pptx')
-    print("Presentation PowerPoint creee : cours-outils-data.pptx")
+    prs.save('cours-outils-data-complet.pptx')
+    print("Presentation PowerPoint creee : cours-outils-data-complet.pptx")
+    print(f"Nombre total de slides : {len(prs.slides)}")
 
 if __name__ == '__main__':
     creer_presentation()

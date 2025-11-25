@@ -51,11 +51,17 @@ Ce dépôt contient :
 
 ### Étape 1 : Consulter les slides
 
-1. **Ouvrez le fichier PowerPoint** : `slides/cours-outils-data.pptx`
-   - C'est la version recommandée pour suivre le cours
-   - Vous pouvez aussi utiliser `slides/index.html` dans un navigateur
+1. **Ouvrez le fichier PowerPoint** : `slides/cours-outils-data-complet.pptx`
+   - **Version recommandée** : 60 slides détaillés avec schémas
+   - Contenu complet et bien expliqué
+   - Prêt pour projection ou étude personnelle
 
-2. **Lisez attentivement les slides** pour comprendre les concepts
+2. **Alternatives** :
+   - `slides/cours-outils-data.pptx` : Version précédente
+   - `slides/index.html` : Version interactive dans un navigateur
+   - `slides/cours-complet-50-slides.md` : Version Markdown source
+
+3. **Lisez attentivement les slides** pour comprendre les concepts
 
 ### Étape 2 : Faire les exercices
 
